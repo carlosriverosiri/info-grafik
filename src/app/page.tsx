@@ -1,64 +1,57 @@
-import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AnalysChart } from "@/components/dashboard/analys-chart";
+import { ProcessFlow } from "@/components/dashboard/process-flow";
+import { RapporterList } from "@/components/dashboard/rapporter-list";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <header className="border-b border-slate-200 bg-white px-6 py-6 shadow-sm transition-shadow duration-200 ease-out">
+        <div className="mx-auto max-w-5xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 transition-opacity duration-200">
+            Dashboard
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-1 text-sm text-slate-600 transition-colors duration-200">
+            Översikt — Analys, processflöde och rapporter
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      <main className="mx-auto max-w-5xl px-6 py-10">
+        <Tabs defaultValue="analys" className="w-full">
+          <TabsList className="mb-6 h-11 w-full justify-start gap-1 rounded-lg bg-slate-100 p-1 transition-colors duration-200 sm:flex-initial">
+            <TabsTrigger
+              value="analys"
+              className="rounded-md px-4 py-2 transition-all duration-200 ease-out data-[state=active]:bg-indigo-600 data-[state=active]:text-white hover:text-slate-900"
+            >
+              Analys
+            </TabsTrigger>
+            <TabsTrigger
+              value="process"
+              className="rounded-md px-4 py-2 transition-all duration-200 ease-out data-[state=active]:bg-indigo-600 data-[state=active]:text-white hover:text-slate-900"
+            >
+              Processflöde
+            </TabsTrigger>
+            <TabsTrigger
+              value="rapporter"
+              className="rounded-md px-4 py-2 transition-all duration-200 ease-out data-[state=active]:bg-indigo-600 data-[state=active]:text-white hover:text-slate-900"
+            >
+              Rapporter
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="analys" className="mt-0 animate-in fade-in-0 duration-300 ease-out">
+            <AnalysChart />
+          </TabsContent>
+
+          <TabsContent value="process" className="mt-0 animate-in fade-in-0 duration-300 ease-out">
+            <ProcessFlow />
+          </TabsContent>
+
+          <TabsContent value="rapporter" className="mt-0 animate-in fade-in-0 duration-300 ease-out">
+            <RapporterList />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
