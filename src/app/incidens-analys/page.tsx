@@ -7,7 +7,18 @@ import {
 } from "@/components/ui/card";
 import { IncidensChart } from "@/components/incidens-analys/incidens-chart";
 import { IncidensBubbleChart } from "@/components/incidens-analys/incidens-bubble";
-import { STATS, PUBLIKATIONER, COMPARISON_TABLE } from "@/data/incidens-data";
+import { VardformChart } from "@/components/incidens-analys/vardform-chart";
+import { AgeHeatmap } from "@/components/incidens-analys/age-heatmap";
+import { RankingBars } from "@/components/incidens-analys/ranking-bars";
+import { StockholmComparison } from "@/components/incidens-analys/stockholm-comparison";
+import { ExportableSection } from "@/components/incidens-analys/export-section";
+import {
+  STATS,
+  PUBLIKATIONER,
+  COMPARISON_TABLE,
+  STOCKHOLM_RATIO,
+  SWEDEN_YEARS,
+} from "@/data/incidens-data";
 import {
   TrendingUp,
   Activity,
@@ -16,6 +27,10 @@ import {
   BookOpen,
   AlertTriangle,
   Database,
+  MapPin,
+  Layers,
+  Grid3x3,
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -52,7 +67,7 @@ export default function IncidensAnalysPage() {
 
       <main className="mx-auto max-w-5xl px-6 py-10 space-y-8">
         {/* ─── Nyckeltal ───────────────────────────────────────────── */}
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="border-slate-200 bg-white shadow-sm">
             <CardHeader className="pb-1">
               <CardDescription className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate-500">
@@ -101,54 +116,180 @@ export default function IncidensAnalysPage() {
               </p>
             </CardContent>
           </Card>
+
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader className="pb-1">
+              <CardDescription className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <MapPin className="h-3.5 w-3.5" />
+                Stockholm vs Riket
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold tracking-tight text-slate-900">
+                {STOCKHOLM_RATIO[STOCKHOLM_RATIO.length - 1]}x
+              </p>
+              <div className="mt-2">
+                <svg
+                  viewBox={`0 0 ${STOCKHOLM_RATIO.length * 6} 28`}
+                  className="h-6 w-full"
+                  preserveAspectRatio="none"
+                >
+                  <polyline
+                    fill="none"
+                    stroke="rgb(14, 165, 233)"
+                    strokeWidth="1.5"
+                    points={STOCKHOLM_RATIO.map(
+                      (v, i) => `${i * 6},${28 - (v / 2) * 14}`
+                    ).join(" ")}
+                  />
+                  <line
+                    x1="0"
+                    y1="14"
+                    x2={STOCKHOLM_RATIO.length * 6}
+                    y2="14"
+                    stroke="rgb(203, 213, 225)"
+                    strokeWidth="0.5"
+                    strokeDasharray="3 3"
+                  />
+                </svg>
+                <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                  <span>{SWEDEN_YEARS[0]}</span>
+                  <span className="text-sky-500">
+                    — streckad = 1.0x
+                  </span>
+                  <span>{SWEDEN_YEARS[SWEDEN_YEARS.length - 1]}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* ─── Huvuddiagram ────────────────────────────────────────── */}
-        <Card className="border-slate-200 bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-slate-900">
-              Incidens över tid
-            </CardTitle>
-            <CardDescription className="text-slate-500">
-              Antal ingrepp per 100 000 invånare. Välj åldersgrupp för att
-              filtrera den svenska datan. Internationella jämförelselinjer visas
-              vid &quot;Totalt&quot;.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <IncidensChart />
-          </CardContent>
-        </Card>
+        <ExportableSection title="Stockholm vs Riket — incidens över tid">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">
+                Stockholm vs Riket — incidens över tid
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Antal ingrepp per 100&nbsp;000 invånare. Välj åldersgrupp i
+                dropdownen för att jämföra Stockholm med riksgenomsnittet.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <IncidensChart />
+            </CardContent>
+          </Card>
+        </ExportableSection>
+
+        {/* ─── Vårdformsskifte ─────────────────────────────────────── */}
+        <ExportableSection title="Vårdformsskifte: sluten- vs öppenvård">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+                <Layers className="h-5 w-5 text-indigo-600" />
+                Vårdformsskifte: sluten- vs öppenvård
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Förskjutningen från slutenvård till specialiserad öppenvård
+                sedan 1998. Öppenvårdsrapporteringen startade runt 2005.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <VardformChart />
+            </CardContent>
+          </Card>
+        </ExportableSection>
+
+        {/* ─── Åldersheatmap ──────────────────────────────────────── */}
+        <ExportableSection title="Incidens per åldersgrupp — heatmap">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+                <Grid3x3 className="h-5 w-5 text-indigo-600" />
+                Incidens per åldersgrupp — heatmap
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Antal ingrepp per 100 000 invånare, efter åldersgrupp och
+                kalenderår. Mörkare färg = högre incidens.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AgeHeatmap />
+            </CardContent>
+          </Card>
+        </ExportableSection>
+
+        {/* ─── Stockholm vs Riket per åldersgrupp ─────────────────── */}
+        <ExportableSection title="Stockholm vs Riket — per åldersgrupp (2024)">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">
+                Stockholm vs Riket — per åldersgrupp (2024)
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Antal ingrepp per 100&nbsp;000 invånare uppdelat på åldersgrupp.
+                Kvoten (blå siffra) visar hur många gånger högre Stockholms
+                incidens är jämfört med riksgenomsnittet.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StockholmComparison />
+            </CardContent>
+          </Card>
+        </ExportableSection>
 
         {/* ─── Bubbeldiagram ──────────────────────────────────────── */}
-        <Card className="border-slate-200 bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-slate-900">
-              Internationell jämförelse — bubbeldiagram
-            </CardTitle>
-            <CardDescription className="text-slate-500">
-              Varje bubbla visar ett lands senast rapporterade incidens.
-              Bubblans storlek är proportionell mot incidensen. Sverige
-              visas i indigo.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <IncidensBubbleChart />
-          </CardContent>
-        </Card>
+        <ExportableSection title="Internationell jämförelse — bubbeldiagram">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">
+                Internationell jämförelse — bubbeldiagram
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Varje bubbla visar ett lands senast rapporterade incidens.
+                Bubblans storlek är proportionell mot incidensen. Sverige
+                visas i indigo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <IncidensBubbleChart />
+            </CardContent>
+          </Card>
+        </ExportableSection>
+
+        {/* ─── Rankinglista ─────────────────────────────────────────── */}
+        <ExportableSection title="Internationell ranking">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+                <BarChart3 className="h-5 w-5 text-indigo-600" />
+                Internationell ranking
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Senast rapporterad incidens per land, sorterad högst till lägst.
+                Sverige markerat i indigo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RankingBars />
+            </CardContent>
+          </Card>
+        </ExportableSection>
 
         {/* ─── Jämförelsetabell ─────────────────────────────────────── */}
-        <Card className="border-slate-200 bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-slate-900">
-              Internationell jämförelse
-            </CardTitle>
-            <CardDescription className="text-slate-500">
-              Senast rapporterad incidens per land jämfört med Sveriges incidens
-              samma år (Totalt, alla åldrar, per 100 000 invånare)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <ExportableSection title="Internationell jämförelse — tabell">
+          <Card className="border-slate-200 bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">
+                Internationell jämförelse
+              </CardTitle>
+              <CardDescription className="text-slate-500">
+                Senast rapporterad incidens per land jämfört med Sveriges incidens
+                samma år (Totalt, alla åldrar, per 100 000 invånare)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -208,8 +349,9 @@ export default function IncidensAnalysPage() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </ExportableSection>
 
         {/* ─── Databeskrivning ─────────────────────────────────────── */}
         <Card className="border-slate-200 bg-white shadow-sm">
