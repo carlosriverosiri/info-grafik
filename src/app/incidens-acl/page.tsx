@@ -5,12 +5,12 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { IncidensChart } from "@/components/incidens-analys/incidens-chart";
-import { IncidensBubbleChart } from "@/components/incidens-analys/incidens-bubble";
-import { VardformChart } from "@/components/incidens-analys/vardform-chart";
-import { AgeHeatmap } from "@/components/incidens-analys/age-heatmap";
-import { RankingBars } from "@/components/incidens-analys/ranking-bars";
-import { StockholmComparison } from "@/components/incidens-analys/stockholm-comparison";
+import { IncidensChart } from "@/components/incidens-acl/incidens-chart";
+import { IncidensBubbleChart } from "@/components/incidens-acl/incidens-bubble";
+import { VardformChart } from "@/components/incidens-acl/vardform-chart";
+import { AgeHeatmap } from "@/components/incidens-acl/age-heatmap";
+import { RankingBars } from "@/components/incidens-acl/ranking-bars";
+import { StockholmComparison } from "@/components/incidens-acl/stockholm-comparison";
 import { ExportableSection } from "@/components/incidens-analys/export-section";
 import {
   STATS,
@@ -18,9 +18,10 @@ import {
   COMPARISON_TABLE,
   STOCKHOLM_RATIO,
   SWEDEN_YEARS,
-} from "@/data/incidens-data";
+} from "@/data/incidens-acl-data";
 import {
   TrendingUp,
+  TrendingDown,
   Activity,
   FileText,
   ArrowLeft,
@@ -35,12 +36,14 @@ import {
 import Link from "next/link";
 
 export const metadata = {
-  title: "Incidensanalys — Rotatorcuffkirurgi",
+  title: "Incidensanalys — Främre korsbandskirurgi",
   description:
-    "Incidensanalys av rotatorcuffkirurgi baserat på nationell och internationell data",
+    "Incidensanalys av främre korsbandsrekonstruktion baserat på nationell och internationell data",
 };
 
-export default function IncidensAnalysPage() {
+export default function IncidensAclPage() {
+  const trendPositive = STATS.trendProcent >= 0;
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* ─── Header ────────────────────────────────────────────────── */}
@@ -54,13 +57,13 @@ export default function IncidensAnalysPage() {
             Tillbaka till Incidensanalys
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Incidensanalys: Rotatorcuffkirurgi
+            Incidensanalys: Främre korsbandskirurgi
           </h1>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600">
-            Nationell incidens av sutur eller reinsertion av sena i axel/överarm
-            (NBL49) baserat på data från Socialstyrelsen (slutenvård +
-            specialiserad öppenvård, 1998–2024), med internationella
-            jämförelser från publicerade populationsstudier.
+            Nationell incidens av rekonstruktion av ligament i knäled (NGE41)
+            baserat på data från Socialstyrelsen (slutenvård + specialiserad
+            öppenvård, 1998–2024), med internationella jämförelser från
+            publicerade populationsstudier.
           </p>
         </div>
       </header>
@@ -88,16 +91,31 @@ export default function IncidensAnalysPage() {
           <Card className="border-slate-200 bg-white shadow-sm">
             <CardHeader className="pb-1">
               <CardDescription className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate-500">
-                <TrendingUp className="h-3.5 w-3.5" />
+                {trendPositive ? (
+                  <TrendingUp className="h-3.5 w-3.5" />
+                ) : (
+                  <TrendingDown className="h-3.5 w-3.5" />
+                )}
                 Trend 2014–2024
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="flex items-baseline gap-2 text-3xl font-bold tracking-tight text-slate-900">
-                +{STATS.trendProcent}%
-                <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                  <TrendingUp className="h-3 w-3" />
-                  Ökning
+                {trendPositive ? "+" : ""}
+                {STATS.trendProcent}%
+                <span
+                  className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    trendPositive
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-red-50 text-red-700"
+                  }`}
+                >
+                  {trendPositive ? (
+                    <TrendingUp className="h-3 w-3" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3" />
+                  )}
+                  {trendPositive ? "Ökning" : "Minskning"}
                 </span>
               </p>
             </CardContent>
@@ -154,9 +172,7 @@ export default function IncidensAnalysPage() {
                 </svg>
                 <div className="mt-1 flex justify-between text-[10px] text-slate-400">
                   <span>{SWEDEN_YEARS[0]}</span>
-                  <span className="text-sky-500">
-                    — streckad = 1.0x
-                  </span>
+                  <span className="text-sky-500">— streckad = 1.0x</span>
                   <span>{SWEDEN_YEARS[SWEDEN_YEARS.length - 1]}</span>
                 </div>
               </div>
@@ -290,65 +306,69 @@ export default function IncidensAnalysPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wider text-slate-500">
-                    <th className="pb-3 pr-4">Land</th>
-                    <th className="pb-3 pr-4 text-right">Incidens</th>
-                    <th className="pb-3 pr-4 text-right">Sverige samma år</th>
-                    <th className="pb-3">Studie</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {COMPARISON_TABLE.map((row) => (
-                    <tr
-                      key={row.country}
-                      className="transition-colors duration-150 hover:bg-slate-50"
-                    >
-                      <td className="py-3 pr-4 font-medium text-slate-900">
-                        {row.country}
-                      </td>
-                      <td className="py-3 pr-4 text-right tabular-nums text-slate-900">
-                        {row.latestValue}
-                        <span className="ml-1 text-xs text-slate-400">
-                          ({row.latestYear})
-                        </span>
-                      </td>
-                      <td className="py-3 pr-4 text-right tabular-nums">
-                        {row.swedenValue !== null ? (
-                          <>
-                            <span className="font-semibold text-indigo-600">
-                              {row.swedenValue}
-                            </span>
-                            {(() => {
-                              const diff = ((row.swedenValue! - row.latestValue) / row.latestValue) * 100;
-                              const sign = diff >= 0 ? "+" : "";
-                              return (
-                                <span
-                                  className={`ml-1.5 text-xs font-semibold ${
-                                    diff >= 0
-                                      ? "text-emerald-600"
-                                      : "text-red-500"
-                                  }`}
-                                >
-                                  {sign}{Math.round(diff)} %
-                                </span>
-                              );
-                            })()}
-                          </>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td className="py-3 text-slate-500 italic">
-                        {row.reference}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wider text-slate-500">
+                      <th className="pb-3 pr-4">Land</th>
+                      <th className="pb-3 pr-4 text-right">Incidens</th>
+                      <th className="pb-3 pr-4 text-right">Sverige samma år</th>
+                      <th className="pb-3">Studie</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {COMPARISON_TABLE.map((row) => (
+                      <tr
+                        key={row.country}
+                        className="transition-colors duration-150 hover:bg-slate-50"
+                      >
+                        <td className="py-3 pr-4 font-medium text-slate-900">
+                          {row.country}
+                        </td>
+                        <td className="py-3 pr-4 text-right tabular-nums text-slate-900">
+                          {row.latestValue}
+                          <span className="ml-1 text-xs text-slate-400">
+                            ({row.latestYear})
+                          </span>
+                        </td>
+                        <td className="py-3 pr-4 text-right tabular-nums">
+                          {row.swedenValue !== null ? (
+                            <>
+                              <span className="font-semibold text-indigo-600">
+                                {row.swedenValue}
+                              </span>
+                              {(() => {
+                                const diff =
+                                  ((row.swedenValue! - row.latestValue) /
+                                    row.latestValue) *
+                                  100;
+                                const sign = diff >= 0 ? "+" : "";
+                                return (
+                                  <span
+                                    className={`ml-1.5 text-xs font-semibold ${
+                                      diff >= 0
+                                        ? "text-emerald-600"
+                                        : "text-red-500"
+                                    }`}
+                                  >
+                                    {sign}
+                                    {Math.round(diff)} %
+                                  </span>
+                                );
+                              })()}
+                            </>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="py-3 text-slate-500 italic">
+                          {row.reference}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         </ExportableSection>
@@ -369,22 +389,23 @@ export default function IncidensAnalysPage() {
               <p>
                 Nationell statistik hämtad från Socialstyrelsens
                 statistikdatabas. Måttet avser{" "}
-                <em>antal ingrepp per 100 000 invånare</em>, beräknat som
-                summan av slutenvård och specialiserad öppenvård med
-                operationskod <strong>NBL49</strong> (sutur eller reinsertion
-                av sena i axel eller överarm). Datan omfattar hela rikets
-                totalpopulation och är uppdelad per femårig åldersgrupp
-                och kalenderår 1998–2024. Före 2005 finns enbart
-                slutenvårdsdata då öppenvårdsrapporteringen ännu inte
-                var etablerad.
+                <em>antal ingrepp per 100 000 invånare</em>, beräknat som summan
+                av slutenvård och specialiserad öppenvård med operationskod{" "}
+                <strong>NGE41</strong> (rekonstruktion av ligament i knäled utan
+                främmande material, artroskopisk). Datan omfattar hela rikets
+                totalpopulation och är uppdelad per femårig åldersgrupp och
+                kalenderår 1998–2024. Före 2005 finns enbart slutenvårdsdata då
+                öppenvårdsrapporteringen ännu inte var etablerad.
               </p>
               <div className="mt-2 flex items-start gap-2 rounded-md bg-amber-50 p-3 text-amber-800">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p className="text-xs leading-relaxed">
                   Inrapporteringen för den specialiserade öppenvården har
-                  förbättrats över åren. Förändringar mellan år kan delvis
-                  bero på ökad inrapportering, inte enbart på att fler
-                  faktiskt söker vård (Socialstyrelsen).
+                  förbättrats över åren. Förändringar mellan år kan delvis bero
+                  på ökad inrapportering, inte enbart på att fler faktiskt söker
+                  vård (Socialstyrelsen). Det svenska korsbandsregistret
+                  rapporterade 4 554 primära rekonstruktioner 2023 med en
+                  registertäckning &gt;90 %.
                 </p>
               </div>
             </div>
@@ -399,39 +420,33 @@ export default function IncidensAnalysPage() {
               </p>
               <ul className="mt-1.5 list-inside list-disc space-y-1 text-slate-600">
                 <li>
-                  <strong>Norge — direkt jämförbar:</strong> Norsk data
-                  (Tjomsland et al. 2025) använder samma operationskod
-                  NBL49 som Sverige och är åldersjusterad per 100 000.
-                  Norges nationella snitt 2023 var 83 per 100 000, med
-                  stor regional variation (Sydöst 57, Mitt 110).
+                  <strong>Australien — högst rapporterad incidens:</strong>{" "}
+                  Zbrojkiewicz et al. 2018 visar 77 per 100 000 med
+                  totalpopulation som denominator.
                 </li>
                 <li>
-                  <strong>Belgien — hög incidens:</strong> Belgisk data
-                  (NIHDI 2025) visar en standardiserad incidens på 115
-                  per 100 000 försäkrade (2024), med stor regional
-                  variation (Flandern 139, Bryssel 63). Belgien har
-                  nära-universell sjukförsäkring, varför &quot;försäkrade&quot;
-                  i praktiken ≈ totalpopulationen.
+                  <strong>Kanada (Alberta):</strong> Paudel et al. 2022
+                  rapporterar en ökning från 38 till 51 per 100 000 under
+                  2002–2018 i en populationsbaserad studie.
                 </li>
                 <li>
-                  <strong>Denominator:</strong> Finlands data avser befolkning
-                  ≥18 år, Chiles ≥25 år, medan Sverige, Norge och Japan
-                  använder totalpopulationen.
+                  <strong>Norden:</strong> Granan et al. 2009 visar att Norge
+                  hade ca 34 per 100 000 (2004–2007) baserat på nationella
+                  korsbandsregister.
                 </li>
                 <li>
-                  <strong>Åldersstandardisering:</strong> Sydkorea och USA
-                  använder åldersjusterade tal (US 2000-population), vilket
-                  påverkar jämförbarheten.
+                  <strong>Rumänien — låg incidens:</strong> Tolan et al. 2025
+                  visar 8–10 per 100 000, med stor regional variation
+                  (Bukarest–Ilfov 40, enstaka regioner &lt;1).
                 </li>
                 <li>
-                  <strong>Systemtäckning:</strong> Brasiliens data omfattar
-                  enbart det offentliga systemet SUS (ca 75 % av
-                  befolkningen). Privat vård ingår ej.
+                  <strong>Denominator:</strong> De flesta studier använder
+                  totalpopulationen. Åldersstandardisering varierar.
                 </li>
                 <li>
-                  <strong>Operationskoder:</strong> Olika ICD-klassifikationer
-                  och procedurkoder kan inkludera eller exkludera
-                  akromioplastik utan senreparation.
+                  <strong>Operationskoder:</strong> Olika klassifikationssystem
+                  (NOMESCO, ICD-10-PCS, CPT) och definitioner av ACLR kan
+                  inkludera/exkludera partiella rekonstruktioner.
                 </li>
               </ul>
             </div>

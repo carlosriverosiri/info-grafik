@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard — Info-grafik",
-  description: "Professionell översikt för analys, processflöde och rapporter",
+  title: "Incidensanalys — Info-grafik",
+  description: "Nationella operationsincidenser med internationella jämförelser",
 };
 
 export default function RootLayout({
