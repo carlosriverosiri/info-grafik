@@ -1,8 +1,8 @@
 # Info-grafik
 
-Dashboard för professionell institution (bank/läkare/universitet): Analys (linjediagram), Processflöde (ReactFlow) och Rapporter (dokumentlista).
+Dashboard för nationella operationsincidenser — rotatorcuffkirurgi, främre korsbandskirurgi med flera. Interaktiva diagram, Stockholm-vs-Riket-jämförelser och internationella jämförelser.
 
-- **Stack:** Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Chart.js, ReactFlow.
+- **Stack:** Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Chart.js.
 - **Kör:** `npm run dev` → [http://localhost:3000](http://localhost:3000)
 
 ## Dokumentation

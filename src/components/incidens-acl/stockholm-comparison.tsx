@@ -103,7 +103,7 @@ export function StockholmComparison() {
               return `─────────────\nKvot: ${ratio}x\nSkillnad: +${diff} / 100 000`;
             },
             label: (ctx) =>
-              `${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)} / 100 000`,
+              `${ctx.dataset.label}: ${(ctx.parsed.x ?? 0).toFixed(1)} / 100 000`,
           },
         },
       },
@@ -126,7 +126,7 @@ export function StockholmComparison() {
           grid: { display: false },
           ticks: {
             color: "rgb(51, 65, 85)",
-            font: { size: 12, family: "Inter, sans-serif", weight: "500" },
+            font: { size: 12, family: "Inter, sans-serif", weight: 500 },
           },
         },
       },

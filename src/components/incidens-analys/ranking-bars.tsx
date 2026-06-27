@@ -85,7 +85,7 @@ export function RankingBars() {
           padding: 12,
           cornerRadius: 8,
           callbacks: {
-            label: (ctx) => `${ctx.parsed.x.toFixed(1)} per 100 000`,
+            label: (ctx) => `${(ctx.parsed.x ?? 0).toFixed(1)} per 100 000`,
           },
         },
       },
@@ -108,7 +108,7 @@ export function RankingBars() {
           grid: { display: false },
           ticks: {
             color: "rgb(51, 65, 85)",
-            font: { size: 12, family: "Inter, sans-serif", weight: "500" },
+            font: { size: 12, family: "Inter, sans-serif", weight: 500 },
           },
         },
       },
