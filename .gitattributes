@@ -1,0 +1,4 @@
+# Hold line-ending-sensitive files as LF on every platform.
+# nvm/fnm choke on a trailing CR (e.g. "24\r") in .nvmrc, so pin it to LF
+# regardless of whether it's edited from Windows or WSL/Linux.
+.nvmrc text eol=lf
